@@ -4,31 +4,211 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>VymoTV</title>
+<meta name="description" content="VymoTV, un lecteur pour le service auquel vous êtes déjà abonné. Pour Mac, Windows, Android TV et Android.">
+<link rel="icon" href="icone.png">
 <style>
   :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
   body {
-    margin: 0; min-height: 100vh; display: grid; place-items: center;
-    padding: 3rem 1.25rem; background: #07070c; color: #d6d8e0;
+    margin: 0; padding: 3.5rem 1.25rem 5rem;
+    background: #07070c; color: #d6d8e0;
     font: 16px/1.65 -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
   }
-  main { max-width: 34rem; text-align: center; }
-  img { width: 88px; height: 88px; border-radius: 20px; margin-bottom: 1.5rem; }
+  main { max-width: 46rem; margin: 0 auto; }
+
+  header { text-align: center; margin-bottom: 3.5rem; }
+  header img { width: 88px; height: 88px; border-radius: 20px; margin-bottom: 1.5rem; }
   h1 { font-size: 1.6rem; margin: 0 0 .5em; color: #fff; }
-  p { margin: 0 0 1.75em; color: #9599a8; }
+  header p { margin: 0 auto; max-width: 34rem; color: #9599a8; }
+
+  h2 {
+    font-size: .8rem; text-transform: uppercase; letter-spacing: .09em;
+    color: #7c8090; margin: 2.75rem 0 .9rem; font-weight: 600;
+  }
+  h2:first-of-type { margin-top: 0; }
+
+  .groupe { display: grid; gap: .6rem; }
+
+  a.paquet {
+    display: flex; align-items: center; gap: 1rem;
+    padding: .95rem 1.15rem; text-decoration: none;
+    background: #101019; border: 1px solid #1e1e2a; border-radius: .75rem;
+    color: inherit; transition: border-color .15s, background .15s;
+  }
+  a.paquet:hover { background: #14141f; border-color: #2f3242; }
+  a.paquet[aria-disabled="true"] { pointer-events: none; opacity: .45; }
+
+  .paquet .nom { color: #fff; font-weight: 600; }
+  .paquet .quoi { flex: 1; min-width: 0; }
+  .paquet .detail { display: block; color: #7c8090; font-size: .88rem; }
+  .paquet .poids { color: #7c8090; font-size: .88rem; white-space: nowrap; }
+  .paquet .fleche { color: #35a8fc; font-size: 1.1rem; }
+  a.paquet[aria-disabled="true"] .fleche { color: #7c8090; }
+
+  .note {
+    margin: 2.5rem 0 0; padding: 1.1rem 1.25rem;
+    background: #0d0d15; border: 1px solid #1a1a25; border-radius: .75rem;
+    color: #9599a8; font-size: .92rem;
+  }
+  .note strong { color: #d6d8e0; font-weight: 600; }
+  .note p { margin: 0 0 .7em; }
+  .note p:last-child { margin-bottom: 0; }
+
+  footer {
+    margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid #1e1e2a;
+    color: #7c8090; font-size: .9rem; text-align: center;
+  }
   a { color: #35a8fc; }
-  nav a { display: inline-block; margin: 0 .75em; }
+  footer a { display: inline-block; margin: 0 .75em; }
+
+  @media (max-width: 30rem) {
+    a.paquet { gap: .75rem; padding: .85rem 1rem; }
+    .paquet .poids { display: none; }
+  }
 </style>
 </head>
 <body>
 <main>
-  <img src="icone.png" alt="">
-  <h1>VymoTV</h1>
-  <p>Un lecteur pour le service auquel vous êtes déjà abonné. Il n'apporte aucun contenu :
-     vous indiquez l'adresse du serveur de votre fournisseur et vos identifiants.</p>
-  <nav>
+
+  <header>
+    <img src="icone.png" alt="">
+    <h1>VymoTV</h1>
+    <p>Un lecteur pour le service auquel vous êtes déjà abonné. Il n'apporte aucun contenu :
+       vous indiquez l'adresse du serveur de votre fournisseur et vos identifiants.</p>
+  </header>
+
+  <h2>Ordinateur</h2>
+  <div class="groupe">
+    <a class="paquet" data-depot="VymoTV-desktop-releases" data-motif="apple-silicon.dmg"
+       href="https://github.com/VymoTV/VymoTV-desktop-releases/releases/latest">
+      <span class="quoi">
+        <span class="nom">Mac à puce Apple</span>
+        <span class="detail">M1 et suivantes · macOS 12 ou plus récent</span>
+      </span>
+      <span class="poids"></span><span class="fleche">↓</span>
+    </a>
+    <a class="paquet" data-depot="VymoTV-desktop-releases" data-motif="intel.dmg"
+       href="https://github.com/VymoTV/VymoTV-desktop-releases/releases/latest">
+      <span class="quoi">
+        <span class="nom">Mac à processeur Intel</span>
+        <span class="detail">macOS 12 ou plus récent</span>
+      </span>
+      <span class="poids"></span><span class="fleche">↓</span>
+    </a>
+    <a class="paquet" data-depot="VymoTV-desktop-releases" data-motif=".msi"
+       href="https://github.com/VymoTV/VymoTV-desktop-releases/releases/latest">
+      <span class="quoi">
+        <span class="nom">Windows</span>
+        <span class="detail">Windows 10 ou 11, 64 bits</span>
+      </span>
+      <span class="poids"></span><span class="fleche">↓</span>
+    </a>
+  </div>
+
+  <h2>Téléviseur</h2>
+  <div class="groupe">
+    <a class="paquet" data-depot="VymoTV-releases" data-motif="VymoTV.apk"
+       href="https://github.com/VymoTV/VymoTV-releases/releases/latest">
+      <span class="quoi">
+        <span class="nom">Android TV</span>
+        <span class="detail">Box, clé et téléviseur Android · conduite à la télécommande</span>
+      </span>
+      <span class="poids"></span><span class="fleche">↓</span>
+    </a>
+  </div>
+
+  <h2>Téléphone et tablette</h2>
+  <div class="groupe">
+    <a class="paquet" data-depot="VymoTV-mobile-releases" data-motif=".apk"
+       href="https://github.com/VymoTV/VymoTV-mobile-releases/releases/latest">
+      <span class="quoi">
+        <span class="nom">Android</span>
+        <span class="detail">La même interface, conduite au doigt</span>
+      </span>
+      <span class="poids"></span><span class="fleche">↓</span>
+    </a>
+  </div>
+
+  <div class="note">
+    <p><strong>Quel Mac ai-je ?</strong> Menu  → À propos de ce Mac. « Puce Apple M… » pour le
+       premier fichier, « Processeur Intel » pour le second.</p>
+    <p><strong>À la première ouverture</strong>, macOS et Windows signalent une application qu'ils
+       ne connaissent pas. Sur Mac : clic droit sur l'application, puis <em>Ouvrir</em>. Sur
+       Windows : <em>Informations complémentaires</em>, puis <em>Exécuter quand même</em>. Une
+       seule fois, à la première ouverture.</p>
+    <p><strong>Sur Android</strong>, le fichier vient d'ici et non d'une boutique : le système
+       demande l'autorisation d'installer depuis cette source. Elle se donne une fois, au moment
+       où il la demande.</p>
+  </div>
+
+  <footer>
     <a href="confidentialite.html">Politique de confidentialité</a>
     <a href="mailto:frvymotv@gmail.com">Nous écrire</a>
-  </nav>
+  </footer>
+
 </main>
+
+<script>
+/*
+ * Les liens de téléchargement, lus sur GitHub plutôt qu'écrits ici.
+ *
+ * Le nom d'un fichier porte son numéro de version : l'inscrire dans la page obligerait à la
+ * modifier à chaque publication, et un oubli laisserait un lien mort ou, pire, une version
+ * périmée proposée en silence. La page demande donc à chaque dépôt sa dernière publication et
+ * y choisit le fichier qui convient.
+ *
+ * Chaque lien part déjà valide, vers la page des versions du dépôt. Le script ne fait que
+ * l'améliorer — en téléchargement direct, avec le poids et le numéro. Si GitHub ne répond pas,
+ * si le script ne s'exécute pas, ou si le quota anonyme est épuisé, les liens restent ceux
+ * d'origine et mènent au bon endroit.
+ */
+(function () {
+  var liens = document.querySelectorAll("a.paquet");
+  var depots = {};
+  liens.forEach(function (a) { depots[a.dataset.depot] = true; });
+
+  Object.keys(depots).forEach(function (depot) {
+    fetch("https://api.github.com/repos/VymoTV/" + depot + "/releases/latest")
+      .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+      .then(function (publication) { poser(depot, publication); })
+      .catch(function () { /* Les liens d'origine font déjà le travail. */ });
+  });
+
+  function poser(depot, publication) {
+    var version = (publication.tag_name || "").replace(/^v/, "");
+    document.querySelectorAll('a.paquet[data-depot="' + depot + '"]').forEach(function (a) {
+      var motif = a.dataset.motif;
+      var fichier = (publication.assets || []).filter(function (f) {
+        return f.name.slice(-motif.length) === motif;
+      })[0];
+      if (!fichier) return;
+
+      a.href = fichier.browser_download_url;
+      a.querySelector(".poids").textContent = arrondi(fichier.size);
+      var detail = a.querySelector(".detail");
+      if (version) detail.textContent = "Version " + version + " · " + detail.textContent;
+    });
+  }
+
+  /* Des mégaoctets entiers : personne n'a jamais eu besoin de la décimale d'un téléchargement. */
+  function arrondi(octets) { return Math.round(octets / 1048576) + " Mo"; }
+
+  /*
+   * Ce qui n'existe pas encore se dit, plutôt que de mener à une page vide.
+   *
+   * Le jour où une version est publiée, le bouton s'allume de lui-même : rien à modifier ici.
+   */
+  fetch("https://api.github.com/repos/VymoTV/VymoTV-mobile-releases/releases/latest")
+    .then(function (r) { if (r.ok) return; throw 0; })
+    .catch(function () {
+      document.querySelectorAll('a.paquet[data-depot="VymoTV-mobile-releases"]')
+        .forEach(function (a) {
+          a.setAttribute("aria-disabled", "true");
+          a.querySelector(".poids").textContent = "Bientôt";
+          a.querySelector(".fleche").textContent = "·";
+        });
+    });
+})();
+</script>
 </body>
 </html>
