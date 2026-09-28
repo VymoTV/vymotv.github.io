@@ -4,149 +4,404 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>VymoTV</title>
-<meta name="description" content="VymoTV, un lecteur pour le service auquel vous êtes déjà abonné. Pour Mac, Windows, Android TV et Android.">
+<meta name="description" content="Votre abonnement sur le téléviseur, l'ordinateur et le téléphone : la mosaïque du direct, le programme télé, vos films et séries.">
 <link rel="icon" href="icone.png">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root { color-scheme: dark; }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0; padding: 3.5rem 1.25rem 5rem;
-    background: #07070c; color: #d6d8e0;
-    font: 16px/1.65 -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  :root{
+    --fond:#07070c; --surface:#11121a; --surface-haute:#191b26; --contour:#252836;
+    --texte:#f2f4f8; --texte-2:#a9b0c2; --texte-3:#6b7387; --accent:#0089fb; --accent-clair:#3ddcff;
   }
-  main { max-width: 46rem; margin: 0 auto; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--fond);color:var(--texte);font:400 17px/1.65 Manrope,system-ui,sans-serif;
+       -webkit-font-smoothing:antialiased}
+  .halo{position:fixed;inset:0;pointer-events:none;z-index:0;
+        background:radial-gradient(900px 500px at 78% -8%,rgba(0,137,251,.18),transparent 60%),
+                   radial-gradient(700px 420px at 8% 108%,rgba(61,220,255,.10),transparent 60%)}
+  .page{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:0 24px}
+  a{color:inherit}
 
-  header { text-align: center; margin-bottom: 3.5rem; }
-  header img { width: 88px; height: 88px; border-radius: 20px; margin-bottom: 1.5rem; }
-  h1 { font-size: 1.6rem; margin: 0 0 .5em; color: #fff; }
-  header p { margin: 0 auto; max-width: 34rem; color: #9599a8; }
+  /* — en-tête — */
+  header{text-align:center;padding:76px 0 0}
+  header img.logo{width:min(380px,72vw);display:block;margin:0 auto}
+  h1{margin:30px auto 0;max-width:780px;font-size:clamp(30px,4.6vw,46px);line-height:1.18;
+     font-weight:800;letter-spacing:-.5px}
+  h1 em{font-style:normal;background:linear-gradient(100deg,var(--accent-clair),var(--accent));
+        -webkit-background-clip:text;background-clip:text;color:transparent}
+  .accroche{margin:20px auto 0;max-width:660px;font-size:19px;color:var(--texte-2)}
 
-  h2 {
-    font-size: .8rem; text-transform: uppercase; letter-spacing: .09em;
-    color: #7c8090; margin: 2.75rem 0 .9rem; font-weight: 600;
+  .boutons{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:32px}
+  .bouton{display:inline-block;padding:15px 30px;border-radius:13px;text-decoration:none;
+          font-weight:600;font-size:16px;transition:transform .15s ease,filter .15s ease}
+  .bouton:hover{transform:translateY(-2px);filter:brightness(1.1)}
+  .bouton.plein{background:linear-gradient(100deg,var(--accent-clair),var(--accent));color:#04121e}
+  .bouton.creux{background:var(--surface);border:1px solid var(--contour);color:var(--texte)}
+  .sous-bouton{margin-top:14px;font-size:14px;color:var(--texte-3)}
+
+  .vitrine{margin:54px auto 0;max-width:980px;border-radius:16px;border:1px solid var(--contour);
+           overflow:hidden;box-shadow:0 40px 90px -30px rgba(0,137,251,.45)}
+  .vitrine img{width:100%;display:block}
+
+  /* — bandeau de chiffres — */
+  .chiffres{display:grid;gap:1px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+            background:var(--contour);border:1px solid var(--contour);border-radius:15px;
+            overflow:hidden;margin:60px 0}
+  .chiffres div{background:var(--fond);padding:26px 20px;text-align:center}
+  .chiffres b{display:block;font-size:26px;font-weight:800;color:var(--accent-clair)}
+  .chiffres span{display:block;margin-top:4px;font-size:14px;color:var(--texte-3);
+                 letter-spacing:.6px}
+
+  /* — sections illustrées — */
+  section{padding:58px 0;border-top:1px solid var(--contour)}
+  .titre-section{font-size:15px;letter-spacing:2.4px;text-transform:uppercase;color:var(--texte-3);
+                 margin-bottom:34px;text-align:center}
+
+  .duo{display:grid;gap:40px;grid-template-columns:1fr 1fr;align-items:center;
+       padding:34px 0}
+  .duo + .duo{border-top:1px solid var(--contour)}
+  .duo img{width:100%;border-radius:13px;border:1px solid var(--contour);display:block}
+  .duo.inverse .texte{order:2}
+  .duo h3{font-size:24px;font-weight:700;letter-spacing:-.2px;margin-bottom:12px}
+  .duo p{color:var(--texte-2);font-size:16.5px}
+  .duo p + p{margin-top:12px}
+  @media(max-width:760px){
+    .duo{grid-template-columns:1fr;gap:22px}
+    .duo.inverse .texte{order:0}
   }
-  h2:first-of-type { margin-top: 0; }
 
-  .groupe { display: grid; gap: .6rem; }
+  /* — les langues — */
+  .langues{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+           margin-bottom:26px}
+  .langue{background:var(--surface);border:1px solid var(--contour);border-radius:13px;
+          padding:16px 18px;display:flex;align-items:center;gap:12px}
+  .langue .drapeau{font-size:24px;line-height:1}
+  .langue b{display:block;font-size:16px;font-weight:600}
+  .langue span{display:block;font-size:13px;color:var(--texte-3);margin-top:1px;
+               white-space:nowrap}
+  .sous-langues{max-width:720px;margin:0 auto;text-align:center;color:var(--texte-2);
+                font-size:16px}
 
-  a.paquet {
-    display: flex; align-items: center; gap: 1rem;
-    padding: .95rem 1.15rem; text-decoration: none;
-    background: #101019; border: 1px solid #1e1e2a; border-radius: .75rem;
-    color: inherit; transition: border-color .15s, background .15s;
+  /* — le tableau des réglages — */
+  .reglages{width:100%;border-collapse:collapse;font-size:15.5px;margin-top:8px}
+  .reglages td{padding:13px 16px;border-top:1px solid var(--contour);vertical-align:top}
+  .reglages tr:first-child td{border-top:0}
+  .reglages td:first-child{color:var(--texte);font-weight:600;white-space:nowrap;width:1%}
+  .reglages td:last-child{color:var(--texte-2)}
+  @media(max-width:640px){
+    .reglages, .reglages tbody, .reglages tr, .reglages td{display:block;width:auto}
+    .reglages td:first-child{padding-bottom:2px}
+    .reglages td:last-child{padding-top:0;border-top:0}
   }
-  a.paquet:hover { background: #14141f; border-color: #2f3242; }
-  a.paquet[aria-disabled="true"] { pointer-events: none; opacity: .45; }
 
-  .paquet .nom { color: #fff; font-weight: 600; }
-  .paquet .quoi { flex: 1; min-width: 0; }
-  .paquet .detail { display: block; color: #7c8090; font-size: .88rem; }
-  .paquet .poids { color: #7c8090; font-size: .88rem; white-space: nowrap; }
-  .paquet .fleche { color: #35a8fc; font-size: 1.1rem; }
-  a.paquet[aria-disabled="true"] .fleche { color: #7c8090; }
+  /* — grille des autres atouts — */
+  .atouts{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+  .atout{background:var(--surface);border:1px solid var(--contour);border-radius:15px;padding:24px}
+  .atout h3{font-size:17px;font-weight:600;margin-bottom:8px}
+  .atout p{color:var(--texte-2);font-size:15px}
 
-  .note {
-    margin: 2.5rem 0 0; padding: 1.1rem 1.25rem;
-    background: #0d0d15; border: 1px solid #1a1a25; border-radius: .75rem;
-    color: #9599a8; font-size: .92rem;
-  }
-  .note strong { color: #d6d8e0; font-weight: 600; }
-  .note p { margin: 0 0 .7em; }
-  .note p:last-child { margin-bottom: 0; }
+  /* — code Downloader — */
+  .code{margin:0 auto;max-width:640px;background:var(--surface);border:1px solid var(--contour);
+        border-radius:22px;padding:32px 30px;text-align:center}
+  .code .quoi{font-size:13px;letter-spacing:2.4px;text-transform:uppercase;color:var(--texte-3)}
+  .code .valeur{margin:14px 0 6px;font-weight:800;font-size:clamp(40px,10vw,68px);letter-spacing:6px;
+            background:linear-gradient(100deg,var(--accent-clair),var(--accent));
+            -webkit-background-clip:text;background-clip:text;color:transparent}
+  .code p{color:var(--texte-2);font-size:15px}
+  .code code{background:var(--surface-haute);border:1px solid var(--contour);border-radius:7px;
+             padding:2px 8px;font-size:14px}
 
-  footer {
-    margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid #1e1e2a;
-    color: #7c8090; font-size: .9rem; text-align: center;
-  }
-  a { color: #35a8fc; }
-  footer a { display: inline-block; margin: 0 .75em; }
+  ol{counter-reset:e;list-style:none;max-width:660px;margin:34px auto 0}
+  ol li{counter-increment:e;position:relative;padding:0 0 22px 52px;color:var(--texte-2)}
+  ol li::before{content:counter(e);position:absolute;left:0;top:-2px;width:33px;height:33px;
+                border-radius:50%;background:var(--surface-haute);border:1px solid var(--contour);
+                color:var(--accent-clair);font-weight:700;display:grid;place-items:center;font-size:15px}
+  ol li b{color:var(--texte);font-weight:600}
 
-  @media (max-width: 30rem) {
-    a.paquet { gap: .75rem; padding: .85rem 1rem; }
-    .paquet .poids { display: none; }
-  }
+  .avertissement{max-width:700px;margin:0 auto;text-align:center;color:var(--texte-3);font-size:15px}
+
+
+  /* — les paquets à télécharger — */
+  .paquets{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(248px,1fr))}
+  .paquet{background:var(--surface);border:1px solid var(--contour);border-radius:15px;
+          padding:22px 22px 20px;text-decoration:none;display:flex;flex-direction:column;
+          gap:3px;transition:transform .15s ease,border-color .15s ease,background .15s ease}
+  .paquet:hover{transform:translateY(-2px);background:var(--surface-haute);border-color:#39405a}
+  .paquet .ou{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--texte-3)}
+  .paquet b{font-size:19px;font-weight:700;margin-top:6px}
+  .paquet .precision{font-size:14.5px;color:var(--texte-2)}
+  .paquet .etat{margin-top:14px;font-size:14px;font-weight:600;color:var(--accent-clair)}
+  .paquet[aria-disabled="true"]{opacity:.5;pointer-events:none}
+  .paquet[aria-disabled="true"] .etat{color:var(--texte-3)}
+  .apres-paquets{max-width:760px;margin:30px auto 0;color:var(--texte-2);font-size:15.5px}
+  .apres-paquets b{color:var(--texte);font-weight:600}
+  .apres-paquets p + p{margin-top:10px}
+
+  footer{padding:50px 0 72px;text-align:center;color:var(--texte-3);font-size:14px;
+         border-top:1px solid var(--contour)}
+  footer a{color:var(--texte-2)}
 </style>
 </head>
 <body>
-<main>
+<div class="halo"></div>
+<div class="page">
 
   <header>
-    <img src="icone.png" alt="">
-    <h1>VymoTV</h1>
-    <p>Un lecteur pour le service auquel vous êtes déjà abonné. Il n'apporte aucun contenu :
-       vous indiquez l'adresse du serveur de votre fournisseur et vos identifiants.</p>
+    <img class="logo" src="fiche/logo.png" srcset="fiche/logo.png 1x, fiche/logo@2x.png 2x" alt="VymoTV">
+
+    <h1>Votre abonnement mérite mieux <em>qu'une liste de chaînes.</em></h1>
+    <p class="accroche">VymoTV en fait une vraie télévision : l'émission en cours s'affiche sous
+      chaque chaîne, le programme tient sur un écran, vos films reprennent où vous les aviez
+      laissés. À la télécommande depuis le canapé, à la souris sur l'ordinateur, au doigt sur le
+      téléphone.</p>
+
+    <div class="boutons">
+      <a class="bouton plein" href="#telecharger">Télécharger</a>
+      <a class="bouton creux" href="#installer">Installer sur un téléviseur</a>
+    </div>
+    <p class="sous-bouton">Android TV, Mac, Windows, Android · aucun compte VymoTV à créer</p>
+
+    <div class="vitrine">
+      <img src="fiche/vitrine-films.jpg" alt="L'écran des films de VymoTV, avec les affiches, les notes et les catégories">
+    </div>
   </header>
 
-  <h2>Ordinateur</h2>
-  <div class="groupe">
-    <a class="paquet" data-depot="VymoTV-desktop-releases" data-motif="apple-silicon.dmg"
-       href="https://github.com/VymoTV/VymoTV-desktop-releases/releases/latest">
-      <span class="quoi">
-        <span class="nom">Mac à puce Apple</span>
-        <span class="detail">M1 et suivantes · macOS 12 ou plus récent</span>
-      </span>
-      <span class="poids"></span><span class="fleche">↓</span>
-    </a>
-    <a class="paquet" data-depot="VymoTV-desktop-releases" data-motif="intel.dmg"
-       href="https://github.com/VymoTV/VymoTV-desktop-releases/releases/latest">
-      <span class="quoi">
-        <span class="nom">Mac à processeur Intel</span>
-        <span class="detail">macOS 12 ou plus récent</span>
-      </span>
-      <span class="poids"></span><span class="fleche">↓</span>
-    </a>
-    <a class="paquet" data-depot="VymoTV-desktop-releases" data-motif=".msi"
-       href="https://github.com/VymoTV/VymoTV-desktop-releases/releases/latest">
-      <span class="quoi">
-        <span class="nom">Windows</span>
-        <span class="detail">Windows 10 ou 11, 64 bits</span>
-      </span>
-      <span class="poids"></span><span class="fleche">↓</span>
-    </a>
+  <section id="telecharger">
+    <p class="titre-section">Télécharger</p>
+
+    <div class="paquets">
+      <a class="paquet" data-depot="VymoTV-releases" data-motif="VymoTV.apk"
+         href="https://github.com/VymoTV/VymoTV-releases/releases/latest">
+        <span class="ou">Téléviseur</span>
+        <b>Android TV</b>
+        <span class="precision">Box, clé, Google TV, Fire TV</span>
+        <span class="etat">Télécharger l'APK</span>
+      </a>
+
+      <a class="paquet" data-depot="VymoTV-desktop-releases" data-motif="apple-silicon.dmg"
+         href="https://github.com/VymoTV/VymoTV-desktop-releases/releases/latest">
+        <span class="ou">Ordinateur</span>
+        <b>Mac à puce Apple</b>
+        <span class="precision">M1 et suivantes · macOS 12 ou plus récent</span>
+        <span class="etat">Télécharger</span>
+      </a>
+
+      <a class="paquet" data-depot="VymoTV-desktop-releases" data-motif="intel.dmg"
+         href="https://github.com/VymoTV/VymoTV-desktop-releases/releases/latest">
+        <span class="ou">Ordinateur</span>
+        <b>Mac à processeur Intel</b>
+        <span class="precision">macOS 12 ou plus récent</span>
+        <span class="etat">Télécharger</span>
+      </a>
+
+      <a class="paquet" data-depot="VymoTV-desktop-releases" data-motif=".msi"
+         href="https://github.com/VymoTV/VymoTV-desktop-releases/releases/latest">
+        <span class="ou">Ordinateur</span>
+        <b>Windows</b>
+        <span class="precision">Windows 10 ou 11, 64 bits</span>
+        <span class="etat">Télécharger</span>
+      </a>
+
+      <a class="paquet" data-depot="VymoTV-mobile-releases" data-motif=".apk"
+         href="https://github.com/VymoTV/VymoTV-mobile-releases/releases/latest">
+        <span class="ou">Téléphone et tablette</span>
+        <b>Android</b>
+        <span class="precision">La même interface, conduite au doigt</span>
+        <span class="etat">Télécharger l'APK</span>
+      </a>
+    </div>
+
+    <div class="apres-paquets">
+      <p><b>Quel Mac ai-je ?</b> Menu Pomme → À propos de ce Mac. « Puce Apple M… » pour le premier
+        fichier, « Processeur Intel » pour le second.</p>
+      <p><b>À la première ouverture</b>, macOS et Windows signalent une application qu'ils ne
+        connaissent pas encore. Sur Mac : clic droit sur l'application, puis <em>Ouvrir</em>. Sur
+        Windows : <em>Informations complémentaires</em>, puis <em>Exécuter quand même</em>. Une
+        seule fois.</p>
+      <p><b>Sur Android</b>, le fichier vient d'ici et non d'une boutique : le système demande
+        l'autorisation d'installer depuis cette source, au moment où il en a besoin.</p>
+    </div>
+  </section>
+
+  <div class="chiffres">
+    <div><b>1,5 s</b><span>pour arriver à l'accueil</span></div>
+    <div><b>0</b><span>publicité, 0 traceur</span></div>
+    <div><b>TV, Mac, PC</b><span>et Android au doigt</span></div>
+    <div><b>Hors ligne</b><span>le catalogue reste sur l'appareil</span></div>
+    <div><b>8 langues</b><span>suit celle du système</span></div>
   </div>
 
-  <h2>Téléviseur</h2>
-  <div class="groupe">
-    <a class="paquet" data-depot="VymoTV-releases" data-motif="VymoTV.apk"
-       href="https://github.com/VymoTV/VymoTV-releases/releases/latest">
-      <span class="quoi">
-        <span class="nom">Android TV</span>
-        <span class="detail">Box, clé et téléviseur Android · conduite à la télécommande</span>
-      </span>
-      <span class="poids"></span><span class="fleche">↓</span>
-    </a>
-  </div>
+  <section>
+    <p class="titre-section">Ce que ça change au quotidien</p>
 
-  <h2>Téléphone et tablette</h2>
-  <div class="groupe">
-    <a class="paquet" data-depot="VymoTV-mobile-releases" data-motif=".apk"
-       href="https://github.com/VymoTV/VymoTV-mobile-releases/releases/latest">
-      <span class="quoi">
-        <span class="nom">Android</span>
-        <span class="detail">La même interface, conduite au doigt</span>
-      </span>
-      <span class="poids"></span><span class="fleche">↓</span>
-    </a>
-  </div>
+    <div class="duo">
+      <div class="texte">
+        <h3>On voit ce qui passe, pas des noms</h3>
+        <p>La mosaïque du direct affiche sous chaque chaîne l'émission en cours et une barre qui
+          dit où elle en est. On choisit avec les yeux, pas en lisant une liste.</p>
+        <p>Une rubrique « Récemment vues » remonte celles que vous venez de regarder, et un appui
+          long ouvre la chaîne : ses favoris, sa soirée, et le replay quand le serveur le permet.</p>
+      </div>
+      <img src="fiche/vitrine-direct.jpg" alt="La mosaïque des chaînes en direct, avec l'émission en cours sous chaque vignette">
+    </div>
 
-  <div class="note">
-    <p><strong>Quel Mac ai-je ?</strong> Menu Pomme → À propos de ce Mac. « Puce Apple M… » pour le
-       premier fichier, « Processeur Intel » pour le second.</p>
-    <p><strong>À la première ouverture</strong>, macOS et Windows signalent une application qu'ils
-       ne connaissent pas. Sur Mac : clic droit sur l'application, puis <em>Ouvrir</em>. Sur
-       Windows : <em>Informations complémentaires</em>, puis <em>Exécuter quand même</em>. Une
-       seule fois, à la première ouverture.</p>
-    <p><strong>Sur Android</strong>, le fichier vient d'ici et non d'une boutique : le système
-       demande l'autorisation d'installer depuis cette source. Elle se donne une fois, au moment
-       où il la demande.</p>
-  </div>
+    <div class="duo inverse">
+      <div class="texte">
+        <h3>Le programme, sans chercher</h3>
+        <p>Les chaînes à gauche, leur journée à droite, une barre qui suit l'heure. Un champ de
+          recherche pour retrouver une chaîne par son nom, des filtres pour ne garder que le
+          sport, l'info ou les enfants.</p>
+        <p>C'est aussi là qu'on masque pour de bon une chaîne qui ne sert jamais. Elle disparaît
+          alors de la mosaïque aussi : réglé une fois, réglé partout.</p>
+      </div>
+      <img src="fiche/vitrine-programme.jpg" alt="Le programme télé : les chaînes à gauche, leur journée à droite">
+    </div>
+
+    <div class="duo">
+      <div class="texte">
+        <h3>Les films reprennent tout seuls</h3>
+        <p>Les affiches, la note, la catégorie : on reconnaît un film avant de lire son titre.
+          Et s'il reste en cours, la reprise est proposée directement depuis la liste — pas
+          besoin de rouvrir la fiche pour retrouver où on en était.</p>
+        <p>Les séries suivent le même principe, épisode par épisode.</p>
+      </div>
+      <img src="fiche/vitrine-reprise.jpg" alt="La rangée « Reprendre la lecture » en haut de l'écran des films">
+    </div>
+
+    <div class="duo inverse">
+      <div class="texte">
+        <h3>Une fiche par titre</h3>
+        <p>Le résumé, la note, l'année, la durée, la réalisation, la distribution, le pays —
+          et, en dessous, les titres voisins de la même catégorie, pour ne pas repartir de la
+          liste quand celui-ci ne convient pas.</p>
+      </div>
+      <img src="fiche/vitrine-fiche.jpg" alt="La fiche d'un film, avec son affiche et son résumé">
+    </div>
+
+    <div class="duo inverse">
+      <div class="texte">
+        <h3>Un lecteur qui ne demande rien</h3>
+        <p>Barre de progression, sous-titres et pistes audio à portée d'OK, retour arrière quand
+          le serveur le permet. Chaque écran rappelle en bas ce que font les touches : personne
+          n'a besoin d'apprendre quoi que ce soit.</p>
+      </div>
+      <img src="fiche/vitrine-lecteur.jpg" alt="Le lecteur vidéo, avec la barre de progression et les rappels de touches">
+    </div>
+
+    <div class="duo">
+      <div class="texte">
+        <h3>Et une version pour ceux que ça dépasse</h3>
+        <p>Un réglage, et l'accueil ne garde que trois grandes portes : Direct, Films, Séries.
+          Le clavier, les réglages du lecteur et les informations d'abonnement disparaissent,
+          et le direct s'ouvre directement sur les favoris.</p>
+        <p>Un second réglage agrandit tous les textes. Un code à quatre chiffres peut verrouiller
+          les réglages, pour que rien ne se dérègle par accident.</p>
+      </div>
+      <img src="fiche/vitrine-simplifie.jpg" alt="L'accueil en mode simplifié : trois grandes portes et rien d'autre">
+    </div>
+
+    <div class="duo">
+      <div class="texte">
+        <h3>Un contrôle parental qui verrouille ce que vous désignez</h3>
+        <p>Un code à quatre chiffres protège les catégories que vous choisissez, une par une —
+          pas un interrupteur qui protège on ne sait quoi. Elles demandent le code pour
+          s'ouvrir, et un réglage à part fait disparaître les contenus réservés aux adultes.</p>
+        <p>Le même code peut verrouiller les réglages eux-mêmes, pour que rien ne se dérègle
+          par accident.</p>
+      </div>
+      <img src="fiche/vitrine-parental.jpg" alt="Le clavier du code à quatre chiffres">
+    </div>
+  </section>
+
+  <section>
+    <p class="titre-section">Huit langues</p>
+
+    <div class="langues">
+      <div class="langue"><span class="drapeau">🇫🇷</span><div><b>Français</b><span>France, Belgique</span></div></div>
+      <div class="langue"><span class="drapeau">🇬🇧</span><div><b>English</b><span>UK, US</span></div></div>
+      <div class="langue"><span class="drapeau">🇪🇸</span><div><b>Español</b><span>España</span></div></div>
+      <div class="langue"><span class="drapeau">🇵🇹</span><div><b>Português</b><span>Portugal, Brasil</span></div></div>
+      <div class="langue"><span class="drapeau">🇩🇪</span><div><b>Deutsch</b><span>Deutschland</span></div></div>
+      <div class="langue"><span class="drapeau">🇮🇹</span><div><b>Italiano</b><span>Italia</span></div></div>
+      <div class="langue"><span class="drapeau">🇳🇱</span><div><b>Nederlands</b><span>Nederland</span></div></div>
+      <div class="langue"><span class="drapeau">🌐</span><div><b>العربية</b><span>من اليمين لليسار</span></div></div>
+    </div>
+
+    <p class="sous-langues">L'interface suit la langue du système, sans rien à régler. Et si
+      quelqu'un du foyer préfère une autre langue que celle de l'écran, Android laisse la
+      choisir application par application. L'arabe se lit de droite à gauche, et l'interface se
+      retourne avec : le logo passe à droite, les portes se lisent dans le bon ordre. Les dates,
+      les heures et les nombres suivent la langue partout — « 28 septembre 2026 » ici,
+      « September 28, 2026 » là.</p>
+  </section>
+
+  <section>
+    <p class="titre-section">Tous les réglages</p>
+    <table class="reglages">
+      <tr><td>Mode simplifié</td><td>Les trois portes, le très grand texte, les rayons à garder, le verrouillage des réglages</td></tr>
+      <tr><td>Image et son</td><td>Qualité préférée, format de l'image, langue des dialogues et des sous-titres</td></tr>
+      <tr><td>Affichage</td><td>Taille du texte, couleur d'accent, écran de démarrage, animations, images de fond</td></tr>
+      <tr><td>Contenu</td><td>Pays affichés, contenus adultes, reprise de lecture, regroupement par qualité, chaînes masquées</td></tr>
+      <tr><td>Contrôle parental</td><td>Le code à quatre chiffres, les catégories verrouillées une par une</td></tr>
+      <tr><td>Mon abonnement</td><td>État, date d'expiration, adresse du serveur, mise à jour du contenu et de l'application</td></tr>
+      <tr><td>Lecture avancée</td><td>Mémoire tampon, décodage matériel, tunneling, pas de saut, seuil « terminé »</td></tr>
+      <tr><td>TV en direct</td><td>Zapping par numéro, numéros et logos, durée du bandeau, annonce de fin d'émission</td></tr>
+      <tr><td>Guide des programmes</td><td>Source (API du panel ou XMLTV), décalage horaire, jours de rattrapage, import complet</td></tr>
+      <tr><td>Serveur</td><td>Format de flux (TS ou HLS), mode compatible pour le rattrapage</td></tr>
+      <tr><td>Réseau et cache</td><td>Résolveur DNS chiffré, serveur relais, délais, réessais, fraîcheur du catalogue</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <p class="titre-section">Et aussi</p>
+    <div class="atouts">
+      <div class="atout"><h3>La recherche marche hors ligne</h3><p>Films, séries et chaînes déjà
+        reçus sont cherchés sur l'appareil. Deux lettres suffisent, et la dictée évite le clavier
+        quand la télécommande en a un micro.</p></div>
+      <div class="atout"><h3>Plusieurs abonnements</h3><p>On enregistre plusieurs accès et on passe
+        de l'un à l'autre depuis l'accueil. Chacun garde ses favoris, ses reprises et ses réglages.</p></div>
+      <div class="atout"><h3>Ça s'ouvre même quand ça rame</h3><p>Le catalogue et le programme
+        restent en mémoire sur l'appareil. L'application s'affiche immédiatement et se met à
+        jour en arrière-plan, sans écran de chargement.</p></div>
+      <div class="atout"><h3>Rien ne sort de chez vous</h3><p>Aucune régie publicitaire, aucune
+        mesure d'audience, aucun rapport de plantage. Vos identifiants restent sur l'appareil et
+        ne partent qu'au serveur que vous avez indiqué.</p></div>
+      <div class="atout"><h3>Les mises à jour arrivent seules</h3><p>L'application vérifie s'il
+        existe une version plus récente et propose de l'installer. Pas de fichier à retélécharger
+        à la main tous les mois.</p></div>
+    </div>
+  </section>
+
+  <section id="installer">
+    <p class="titre-section">L'installer sur votre téléviseur</p>
+
+    <div class="code">
+      <div class="quoi">Code Downloader</div>
+      <div class="valeur">4795784</div>
+      <p>Ouvrez <code>Downloader</code> sur votre téléviseur et saisissez ce code.<br>
+        Sans Downloader, le bouton en haut de page télécharge directement l'APK.</p>
+    </div>
+
+    <ol>
+      <li>Depuis le Play Store de votre téléviseur, installez <b>Downloader</b> (l'application à l'icône orange).</li>
+      <li>Ouvrez-la et saisissez le <b>code ci-dessus</b>, puis validez.</li>
+      <li>Android demandera l'autorisation d'installer depuis cette source : <b>acceptez</b>.</li>
+      <li>Ouvrez VymoTV et saisissez <b>l'adresse de votre serveur</b> et vos identifiants.</li>
+    </ol>
+  </section>
+
+  <section>
+    <p class="avertissement">VymoTV est un lecteur. Il n'héberge, ne fournit et ne vend aucun
+      contenu : il affiche celui de l'abonnement que vous possédez déjà, et dont vous saisissez
+      vous-même l'adresse et les identifiants.</p>
+  </section>
 
   <footer>
-    <a href="confidentialite.html">Politique de confidentialité</a>
-    <a href="mailto:frvymotv@gmail.com">Nous écrire</a>
+    <p>VymoTV · <a href="confidentialite.html">Politique de confidentialité</a> ·
+      <a href="https://github.com/VymoTV/VymoTV-desktop-releases/releases">Toutes les versions</a></p>
+    <p style="margin-top:8px">Un abonnement compatible Xtream Codes est nécessaire.</p>
   </footer>
 
-</main>
+</div>
 
 <script>
 /*
@@ -155,23 +410,22 @@
  * Le nom d'un fichier porte son numéro de version : l'inscrire dans la page obligerait à la
  * modifier à chaque publication, et un oubli laisserait un lien mort ou, pire, une version
  * périmée proposée en silence. La page demande donc à chaque dépôt sa dernière publication et
- * y choisit le fichier qui convient.
+ * y choisit le fichier qui convient à ce paquet.
  *
  * Chaque lien part déjà valide, vers la page des versions du dépôt. Le script ne fait que
- * l'améliorer — en téléchargement direct, avec le poids et le numéro. Si GitHub ne répond pas,
- * si le script ne s'exécute pas, ou si le quota anonyme est épuisé, les liens restent ceux
- * d'origine et mènent au bon endroit.
+ * l'améliorer — téléchargement direct, numéro de version et poids. Si GitHub ne répond pas, si
+ * le quota anonyme est épuisé ou si le script ne s'exécute pas, les liens d'origine mènent
+ * toujours au bon endroit.
  */
 (function () {
-  var liens = document.querySelectorAll("a.paquet");
   var depots = {};
-  liens.forEach(function (a) { depots[a.dataset.depot] = true; });
+  document.querySelectorAll("a.paquet").forEach(function (a) { depots[a.dataset.depot] = true; });
 
   Object.keys(depots).forEach(function (depot) {
     fetch("https://api.github.com/repos/VymoTV/" + depot + "/releases/latest")
       .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
       .then(function (publication) { poser(depot, publication); })
-      .catch(function () { /* Les liens d'origine font déjà le travail. */ });
+      .catch(function () { manque(depot); });
   });
 
   function poser(depot, publication) {
@@ -184,30 +438,22 @@
       if (!fichier) return;
 
       a.href = fichier.browser_download_url;
-      a.querySelector(".poids").textContent = arrondi(fichier.size);
-      var detail = a.querySelector(".detail");
-      if (version) detail.textContent = "Version " + version + " · " + detail.textContent;
+      a.querySelector(".etat").textContent =
+        (version ? "Version " + version + " · " : "") + Math.round(fichier.size / 1048576) + " Mo";
     });
   }
-
-  /* Des mégaoctets entiers : personne n'a jamais eu besoin de la décimale d'un téléchargement. */
-  function arrondi(octets) { return Math.round(octets / 1048576) + " Mo"; }
 
   /*
    * Ce qui n'existe pas encore se dit, plutôt que de mener à une page vide.
    *
-   * Le jour où une version est publiée, le bouton s'allume de lui-même : rien à modifier ici.
+   * Le jour où une version est publiée, la carte s'allume d'elle-même : rien à modifier ici.
    */
-  fetch("https://api.github.com/repos/VymoTV/VymoTV-mobile-releases/releases/latest")
-    .then(function (r) { if (r.ok) return; throw 0; })
-    .catch(function () {
-      document.querySelectorAll('a.paquet[data-depot="VymoTV-mobile-releases"]')
-        .forEach(function (a) {
-          a.setAttribute("aria-disabled", "true");
-          a.querySelector(".poids").textContent = "Bientôt";
-          a.querySelector(".fleche").textContent = "·";
-        });
+  function manque(depot) {
+    document.querySelectorAll('a.paquet[data-depot="' + depot + '"]').forEach(function (a) {
+      a.setAttribute("aria-disabled", "true");
+      a.querySelector(".etat").textContent = "Bientôt";
     });
+  }
 })();
 </script>
 </body>
