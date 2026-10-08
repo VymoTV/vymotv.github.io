@@ -409,8 +409,13 @@
  *
  * Le nom d'un fichier porte son numéro de version : l'inscrire dans la page obligerait à la
  * modifier à chaque publication, et un oubli laisserait un lien mort ou, pire, une version
- * périmée proposée en silence. La page demande donc à chaque dépôt sa dernière publication et
- * y choisit le fichier qui convient à ce paquet.
+ * périmée proposée en silence.
+ *
+ * Chaque carte cherche son fichier en remontant les publications, de la plus récente vers les
+ * précédentes, et s'arrête à la première qui le contient. Ce n'est pas une précaution de
+ * principe : les paquets d'un système ne sortent pas toujours en même temps que ceux d'un autre.
+ * Une publication qui ne porte que les images de macOS ne doit pas faire disparaître le numéro
+ * de version côté Windows — elle doit le laisser sur la dernière qu'il a eue.
  *
  * Chaque lien part déjà valide, vers la page des versions du dépôt. Le script ne fait que
  * l'améliorer — téléchargement direct, numéro de version et poids. Si GitHub ne répond pas, si
@@ -422,36 +427,35 @@
   document.querySelectorAll("a.paquet").forEach(function (a) { depots[a.dataset.depot] = true; });
 
   Object.keys(depots).forEach(function (depot) {
-    fetch("https://api.github.com/repos/VymoTV/" + depot + "/releases/latest")
+    fetch("https://api.github.com/repos/VymoTV/" + depot + "/releases?per_page=10")
       .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
-      .then(function (publication) { poser(depot, publication); })
-      .catch(function () { manque(depot); });
+      .then(function (publications) {
+        poser(depot, publications.filter(function (p) { return !p.draft && !p.prerelease; }));
+      })
+      .catch(function () { /* Les liens d'origine font déjà le travail. */ });
   });
 
-  function poser(depot, publication) {
-    var version = (publication.tag_name || "").replace(/^v/, "");
+  function poser(depot, publications) {
     document.querySelectorAll('a.paquet[data-depot="' + depot + '"]').forEach(function (a) {
       var motif = a.dataset.motif;
-      var fichier = (publication.assets || []).filter(function (f) {
-        return f.name.slice(-motif.length) === motif;
-      })[0];
-      if (!fichier) return;
+      for (var i = 0; i < publications.length; i++) {
+        var publication = publications[i];
+        var fichier = (publication.assets || []).filter(function (f) {
+          return f.name.slice(-motif.length) === motif;
+        })[0];
+        if (!fichier) continue;
 
-      a.href = fichier.browser_download_url;
-      a.querySelector(".etat").textContent =
-        (version ? "Version " + version + " · " : "") + Math.round(fichier.size / 1048576) + " Mo";
-    });
-  }
-
-  /*
-   * Ce qui n'existe pas encore se dit, plutôt que de mener à une page vide.
-   *
-   * Le jour où une version est publiée, la carte s'allume d'elle-même : rien à modifier ici.
-   */
-  function manque(depot) {
-    document.querySelectorAll('a.paquet[data-depot="' + depot + '"]').forEach(function (a) {
+        var version = (publication.tag_name || "").replace(/^v/, "");
+        a.href = fichier.browser_download_url;
+        a.querySelector(".etat").textContent =
+          (version ? "Version " + version + " \u00b7 " : "") +
+          Math.round(fichier.size / 1048576) + " Mo";
+        return;
+      }
+      // Aucune publication ne porte ce fichier : la carte s'éteint plutôt que de mener au vide.
+      // Le jour où il paraît, elle s'allume d'elle-même — rien à modifier ici.
       a.setAttribute("aria-disabled", "true");
-      a.querySelector(".etat").textContent = "Bientôt";
+      a.querySelector(".etat").textContent = "Bient\u00f4t";
     });
   }
 })();
